@@ -14,11 +14,9 @@ import (
 const DefaultWorkers = 2
 
 func main() {
-	fmt.Println("Link counter")
-
 	urlsFile := flag.String("urls", "", "Text file with URLs to process.")
-	output := flag.String("output", "", "Output file.")
-	json := flag.Bool("json", false, "Enable JSON output")
+	output := flag.String("output", "", "Output file. Stdout by default.")
+	jsonFormat := flag.Bool("json", false, "Enable JSON output")
 	workers := flag.Int("workers", DefaultWorkers, "Number of parallel workers to process links")
 
 	flag.Parse()
@@ -54,7 +52,7 @@ func main() {
 		defer outputFile.Close()
 	}
 
-	if *json {
+	if *jsonFormat {
 		jsonOutput(results, outputFile)
 	} else {
 		humanOutput(results, outputFile)
