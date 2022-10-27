@@ -2,19 +2,21 @@ package core
 
 import (
 	"fmt"
-	"github.com/denis256/link-counter/links"
-	"github.com/denis256/link-counter/page"
 	"log"
 	u "net/url"
 	"strings"
+	"sync"
+
+	"github.com/denis256/link-counter/links"
+	"github.com/denis256/link-counter/page"
 )
 
+// LinkCounter structure to configure link counter application
 type LinkCounter struct {
-	ConcurrentRequests int
-
-	Results []ScanResult
+	Workers int
 }
 
+// ScanResult structure to store scan results of single url.
 type ScanResult struct {
 	PageUrl  string
 	Internal int
@@ -23,6 +25,45 @@ type ScanResult struct {
 	Error    string
 }
 
+func (counter LinkCounter) Scan(urls []string) []ScanResult {
+
+	var wg sync.WaitGroup
+	jobs := make(chan string)
+	results := make(chan ScanResult, len(urls))
+
+	// start workers
+	for i := 0; i < counter.Workers; i++ {
+		wg.Add(1)
+		go worker(&wg, jobs, results)
+	}
+
+	// sending each url for processing
+	for _, u := range urls {
+		jobs <- u
+	}
+
+	// closing job channel and wait for results
+	close(jobs)
+	wg.Wait()
+	close(results)
+
+	var result []ScanResult
+
+	for r := range results {
+		result = append(result, r)
+	}
+
+	return result
+}
+
+func worker(wg *sync.WaitGroup, jobs <-chan string, result chan ScanResult) {
+	defer wg.Done()
+	for job := range jobs {
+		result <- scanUrl(job)
+	}
+}
+
+// scanUrl download and scan urls from a single page
 func scanUrl(url string) ScanResult {
 	result := ScanResult{
 		PageUrl: url,
