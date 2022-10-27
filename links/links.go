@@ -1,7 +1,10 @@
 package links
 
 import (
+	"bufio"
+	"log"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -50,4 +53,33 @@ func CountLinks(rootDomain string, links []string) LinkStats {
 	}
 
 	return stats
+}
+
+// ReadLinksFromFile read links from file line by line
+func ReadLinksFromFile(file string) ([]string, error) {
+	readFile, err := os.Open(file)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer readFile.Close()
+
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+
+	var fileLines []string
+
+	for fileScanner.Scan() {
+		line := fileScanner.Text()
+		_, err := url.Parse(line)
+		if err != nil {
+			log.Printf("Failed to parse url %s", line)
+			continue
+		}
+
+		fileLines = append(fileLines, line)
+	}
+
+	return fileLines, nil
 }

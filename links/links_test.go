@@ -57,6 +57,15 @@ func TestCountLinksErrors(t *testing.T) {
 	validateStats(t, stats, 2, 1, 2)
 }
 
+func TestReadLinksFromFile(t *testing.T) {
+	links, err := ReadLinksFromFile("test_file_with_links.txt")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, links)
+	assert.Len(t, links, 2)
+	assert.Contains(t, links, "http://google.com")
+	assert.Contains(t, links, "http://qwe.com")
+}
+
 func validateStats(t *testing.T, stats LinkStats, internal, external, error int) {
 	assert.Equalf(t, internal, stats.Internal, "Expected to have %d internal links", internal)
 	assert.Equalf(t, external, stats.External, "Expected to have %d external links", external)
