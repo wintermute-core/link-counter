@@ -18,13 +18,14 @@ type LinkCounter struct {
 
 // ScanResult structure to store scan results of single url.
 type ScanResult struct {
-	PageURL  string
-	Internal int
-	External int
-	Success  bool
-	Error    string
+	PageURL  string `json:"page_url"`
+	Internal int    `json:"internal_links_num"`
+	External int    `json:"external_links_num"`
+	Success  bool   `json:"success"`
+	Error    string `json:"error_message"`
 }
 
+// Scan passed url for internal and external links.
 func (counter LinkCounter) Scan(urls []string) []ScanResult {
 	var wg sync.WaitGroup
 
@@ -60,6 +61,7 @@ func (counter LinkCounter) Scan(urls []string) []ScanResult {
 	return result
 }
 
+// worker function that process urls from incoming channel and send result to output channel
 func worker(wg *sync.WaitGroup, jobs <-chan string, result chan ScanResult) {
 	defer wg.Done()
 
@@ -68,7 +70,7 @@ func worker(wg *sync.WaitGroup, jobs <-chan string, result chan ScanResult) {
 	}
 }
 
-// scanURL download and scan urls from a single page
+// scanURL download and scan urls from a single page.
 func scanURL(url string) ScanResult {
 	result := ScanResult{
 		PageURL: url,

@@ -1,6 +1,8 @@
 package core
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,4 +45,28 @@ func TestMultipleLinksEvaluation(t *testing.T) {
 
 	assert.NotEmpty(t, results)
 	assert.Equal(t, 4, len(results))
+}
+
+func TestSerialization(t *testing.T) {
+	result := ScanResult{
+		PageURL:  "http://google.com",
+		Internal: 666,
+		External: 111,
+		Success:  true,
+		Error:    "Test",
+	}
+
+	bytes, err := json.Marshal(result)
+	assert.NoError(t, err)
+
+	rawJSON := map[string]interface{}{}
+
+	err = json.Unmarshal(bytes, &rawJSON)
+	assert.NoError(t, err)
+
+	assert.Equal(t, rawJSON["page_url"], result.PageURL)
+	assert.Equal(t, fmt.Sprintf("%v", rawJSON["internal_links_num"]), fmt.Sprintf("%v", result.Internal))
+	assert.Equal(t, fmt.Sprintf("%v", rawJSON["external_links_num"]), fmt.Sprintf("%v", result.External))
+	assert.Equal(t, rawJSON["success"], result.Success)
+	assert.Equal(t, rawJSON["error_message"], result.Error)
 }
