@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -17,6 +18,7 @@ func main() {
 
 	urlsFile := flag.String("urls", "", "Text file with URLs to process.")
 	output := flag.String("output", "", "Output file.")
+	json := flag.Bool("json", false, "Enable JSON output")
 	workers := flag.Int("workers", DefaultWorkers, "Number of parallel workers to process links")
 
 	flag.Parse()
@@ -49,10 +51,17 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-
 		defer outputFile.Close()
 	}
 
+	if *json {
+		jsonOutput(results, outputFile)
+	} else {
+		humanOutput(results, outputFile)
+	}
+}
+
+func humanOutput(results []core.ScanResult, outputFile *os.File) {
 	for _, result := range results {
 		_, err := fmt.Fprintf(outputFile,
 			"page_url=%s internal_links_num=%d external_links_num=%d success=%v error_message=%s\n",
@@ -61,5 +70,19 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+	}
+}
+
+func jsonOutput(results []core.ScanResult, outputFile *os.File) {
+	result, err := json.Marshal(results)
+
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = outputFile.Write(result)
+
+	if err != nil {
+		panic(err)
 	}
 }

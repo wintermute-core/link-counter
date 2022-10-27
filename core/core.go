@@ -18,11 +18,11 @@ type LinkCounter struct {
 
 // ScanResult structure to store scan results of single url.
 type ScanResult struct {
-	PageURL  string
-	Internal int
-	External int
-	Success  bool
-	Error    string
+	PageURL  string `json:"page_url"`
+	Internal int    `json:"internal_links_num"`
+	External int    `json:"external_links_num"`
+	Success  bool   `json:"success"`
+	Error    string `json:"error_message"`
 }
 
 // Scan passed url for internal and external links.
