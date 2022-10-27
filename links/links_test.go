@@ -66,6 +66,11 @@ func TestReadLinksFromFile(t *testing.T) {
 	assert.Contains(t, links, "http://qwe.com")
 }
 
+func TestReadLinksFromFileError(t *testing.T) {
+	_, err := ReadLinksFromFile("not-existing-file-somewhere🪲.txt")
+	assert.Error(t, err)
+}
+
 func validateStats(t *testing.T, stats LinkStats, internal, external, error int) {
 	assert.Equalf(t, internal, stats.Internal, "Expected to have %d internal links", internal)
 	assert.Equalf(t, external, stats.External, "Expected to have %d external links", external)

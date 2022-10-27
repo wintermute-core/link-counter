@@ -72,6 +72,12 @@ func ReadLinksFromFile(file string) ([]string, error) {
 
 	for fileScanner.Scan() {
 		line := fileScanner.Text()
+		line = strings.TrimSpace(line)
+
+		if line == "" {
+			continue
+		}
+
 		_, err := url.Parse(line)
 		if err != nil {
 			log.Printf("Failed to parse url %s", line)
