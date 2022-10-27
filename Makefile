@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 
-build: run-lint
+build: fmt run-lint test
 	go build
 
 run-lint:
