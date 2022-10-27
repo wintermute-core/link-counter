@@ -2,15 +2,18 @@
 
 # Development
 
-Local build:
-```
-make build
-```
-Format files:
-```
-make fmt
-```
-Run: 
+Dependencies:
+  * go 1.19
+  * make
+  * golangci-lint
+
+Make commands:
+  * `make test`
+  * `make fmt`
+  * `make run-lint`
+  * `make build`
+
+Execute final binary: 
 ```
 ./link-counter
 ```
