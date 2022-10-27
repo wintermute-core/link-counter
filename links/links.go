@@ -13,7 +13,6 @@ type LinkStats struct {
 
 // CountLinks evaluate passed links and identify links pointing to internal and external resources.
 func CountLinks(rootDomain string, links []string) LinkStats {
-
 	var root = strings.ToLower(rootDomain)
 
 	var stats = LinkStats{
@@ -23,23 +22,26 @@ func CountLinks(rootDomain string, links []string) LinkStats {
 	}
 
 	for _, link := range links {
-		parsedUrl, err := url.Parse(link)
+		parsedURL, err := url.Parse(link)
+
 		if err != nil {
 			stats.Error++
 			continue
 		}
-		host := strings.ToLower(parsedUrl.Host)
+
+		host := strings.ToLower(parsedURL.Host)
 
 		if host == root || host == "www."+root { // direct link to root domain
 			stats.Internal++
 			continue
 		}
+
 		if strings.HasPrefix(host, ".") { // relative path
 			stats.Internal++
 			continue
 		}
 
-		if parsedUrl.Scheme == "" { // reference to file in the same directory
+		if parsedURL.Scheme == "" { // reference to file in the same directory
 			stats.Internal++
 			continue
 		}
@@ -48,5 +50,4 @@ func CountLinks(rootDomain string, links []string) LinkStats {
 	}
 
 	return stats
-
 }

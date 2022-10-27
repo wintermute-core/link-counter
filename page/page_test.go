@@ -1,9 +1,10 @@
 package page
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBaseCloningSuite(t *testing.T) {
@@ -11,7 +12,6 @@ func TestBaseCloningSuite(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(content))
-
 }
 
 func TestParsePageLinks(t *testing.T) {

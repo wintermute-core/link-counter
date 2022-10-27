@@ -6,11 +6,12 @@ build: fmt run-lint test
 	go build
 
 run-lint:
-	golangci-lint run
+	golangci-lint run ./...
 
 test:
 	go test -v ./...
 
 fmt:
+	goimports -w $(GOFMT_FILES)
 	gofmt -w $(GOFMT_FILES)
 
