@@ -18,7 +18,7 @@ type LinkCounter struct {
 
 // ScanResult structure to store scan results of single url.
 type ScanResult struct {
-	PageUrl  string
+	PageURL  string
 	Internal int
 	External int
 	Success  bool
@@ -26,14 +26,15 @@ type ScanResult struct {
 }
 
 func (counter LinkCounter) Scan(urls []string) []ScanResult {
-
 	var wg sync.WaitGroup
+
 	jobs := make(chan string)
 	results := make(chan ScanResult, len(urls))
 
 	// start workers
 	for i := 0; i < counter.Workers; i++ {
 		wg.Add(1)
+
 		go worker(&wg, jobs, results)
 	}
 
@@ -47,10 +48,13 @@ func (counter LinkCounter) Scan(urls []string) []ScanResult {
 	wg.Wait()
 	close(results)
 
-	var result []ScanResult
+	var result = make([]ScanResult, len(urls))
+
+	var id = 0
 
 	for r := range results {
-		result = append(result, r)
+		result[id] = r
+		id++
 	}
 
 	return result
@@ -58,15 +62,16 @@ func (counter LinkCounter) Scan(urls []string) []ScanResult {
 
 func worker(wg *sync.WaitGroup, jobs <-chan string, result chan ScanResult) {
 	defer wg.Done()
+
 	for job := range jobs {
-		result <- scanUrl(job)
+		result <- scanURL(job)
 	}
 }
 
-// scanUrl download and scan urls from a single page
-func scanUrl(url string) ScanResult {
+// scanURL download and scan urls from a single page
+func scanURL(url string) ScanResult {
 	result := ScanResult{
-		PageUrl: url,
+		PageURL: url,
 		Success: true,
 	}
 
@@ -76,21 +81,21 @@ func scanUrl(url string) ScanResult {
 	if err != nil {
 		result.Success = false
 		result.Error = fmt.Sprint("%w", err)
+
 		return result
 	}
 
 	root := strings.ToLower(parsedURL.Host)
-
-	if strings.HasPrefix(root, "www.") {
-		root = strings.TrimPrefix(root, "www.")
-	}
+	root = strings.TrimPrefix(root, "www.")
 
 	// download page and process links
 	log.Printf("Processing %s", url)
 	pageContent, err := page.DownloadPage(url)
+
 	if err != nil {
 		result.Success = false
 		result.Error = fmt.Sprint("%w", err)
+
 		return result
 	}
 
