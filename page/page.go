@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-// DownloadPage - download url as string
+// DownloadPage download url as string.
 func DownloadPage(url string) ([]byte, error) {
 
 	response, err := http.Get(url)
@@ -26,7 +26,7 @@ func DownloadPage(url string) ([]byte, error) {
 	return content, nil
 }
 
-// ParsePageLinks - parse and extract links from page
+// ParsePageLinks parse and extract links from page.
 func ParsePageLinks(page *[]byte) []string {
 	var links []string
 	tokenizer := html.NewTokenizer(bytes.NewReader(*page))
@@ -50,6 +50,7 @@ func ParsePageLinks(page *[]byte) []string {
 	}
 }
 
+// fetchHref extract HREF value of a link.
 func fetchHref(token html.Token) (string, bool) {
 	found := false
 	link := ""
